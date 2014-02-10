@@ -1,0 +1,28 @@
+{
+    "name": "krillzip/biblesheet",
+    "type": "library",
+    "description": "A library that can transform an Excel sheet with biblequotes into Latex.",
+    "keywords": [ "bible", "diatheke", "biblesheet", "latex" ],
+    "homepage": "https://github.com/krillzip/biblesheet",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kristoffer Paulsson",
+            "email": "krillzip@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">5.3.2",
+        "krillzip/diatheke": "master-dev",
+        "phpoffice/phpexcel": "1.7.9",
+        "symfony/console": "2.4.1",
+        "symfony/yaml": "2.4.1"
+    },
+    "autoload": {
+        "psr-0": {
+			"Krillzip\\Biblesheet": ""
+		}
+    },       
+    "target-dir": "Krillzip/Biblesheet",
+    "bin": ["bin/biblesheet"]
+}
