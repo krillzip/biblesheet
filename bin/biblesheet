@@ -1,8 +1,16 @@
 #!/usr/bin/php
 <?php
+
+/*
+ * (c) Kristoffer Paulsson <krillzip@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 require '../autoload.php';
 
 $shell = new Symfony\Component\Console\Shell(
-        new \Krillzip\Biblesheet\Application()
+        new \Krillzip\Biblesheet\Cli\Application()
 );
 $shell->run();
