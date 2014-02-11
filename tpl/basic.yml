@@ -1,0 +1,20 @@
+##
+## (c) Kristoffer Paulsson <krillzip@gmail.com>
+##
+## For the full copyright and license information, please view the LICENSE
+## file that was distributed with this source code.
+##
+################################################################################
+##
+## Template "basic"
+##
+
+template:
+    name: basic
+    variables: 
+        [title, author]
+    settings:
+        frontpage: true
+        tableOfContent: true
+        verseNewline: true        
+        

@@ -46,6 +46,8 @@ EOT
         $dialog = $this->getHelper('dialog');
         $biblesheet = $this->getHelper('biblesheet')->get();
         
+        $tpl = new \Krillzip\Biblesheet\Template();
+        
         // Arguments and options
         $file = $input->getArgument('file');
         $title = $input->getOption('title');
@@ -73,115 +75,24 @@ EOT
         $output->writeln('Will print from worksheet: <info>' . $sheetNames[$sheetIndex] . '</info>' . PHP_EOL);
         
         $sheet->selectSheet($sheetIndex);
-        $meta = $sheet->metaSelectedSheet();
-                
+        $meta = $biblesheet->extractMeta($sheet);
+
          if($meta === false){
              $output->writeln('<comment>No meta information extracted</comment>');
          }
-        //var_dump($sheet->worksheetWalk());
+         
+         $collection = $biblesheet->walkSheet($sheet, ($meta !== false) ? $meta : null)->flattenData();
+         
+        // Check witch template to print with
+        $tplList = $tpl->getList();
+        //if (count(templates) > 1) {
+            $tplIndex = $dialog->select(
+                    $output, 'Select template to use:' . PHP_EOL . '(<comment>Defaults to basic</comment>)', $tplList, 0
+            );
+        //} else {
+        //    $tplIndex = 0;
+        //}
 
-        /* switch ($input->getArgument('list')) {
-          case 'all':
-          $data = $d->getModules();
-          if ($r) {
-          $output->write($data, false, OutputInterface::OUTPUT_RAW);
-          } else {
-          $structure = OutputParser::parseModules($data);
-          $this->printStructure($structure, $output);
-          }
-          break;
-          case 'modules':
-          $data = $d->getModuleList();
-          if ($r) {
-          $output->write($data, false, OutputInterface::OUTPUT_RAW);
-          } else {
-          $structure = OutputParser::parseModuleList($data);
-          $this->printListAsMatrix($structure, $output);
-          }
-          break;
-          case 'bible':
-          case 'bibles':
-          $data = $d->getModules();
-          $structure = OutputParser::parseModules($data);
-          $output->writeln('<comment>Biblical Texts:</comment>');
-          $this->printList($structure['Biblical Texts'], $output);
-          break;
-          case 'dictionary':
-          case 'dictionaries':
-          $data = $d->getModules();
-          $structure = OutputParser::parseModules($data);
-          $output->writeln('<comment>Dictionaries:</comment>');
-          $this->printList($structure['Dictionaries'], $output);
-          break;
-          case 'commentary':
-          case 'commentaries':
-          $data = $d->getModules();
-          $structure = OutputParser::parseModules($data);
-          $output->writeln('<comment>Commentaries:</comment>');
-          $this->printList($structure['Commentaries'], $output);
-          break;
-          case 'book':
-          case 'books':
-          $data = $d->getModules();
-          $structure = OutputParser::parseModules($data);
-          $output->writeln('<comment>Generic books:</comment>');
-          $this->printList($structure['Generic books'], $output);
-          break;
-          case 'locale':
-          case 'locales':
-          $data = $d->getLocales();
-          if ($r) {
-          $output->write($data, false, OutputInterface::OUTPUT_RAW);
-          } else {
-          $structure = OutputParser::parseModuleList($data);
-          $this->printListAsMatrix($structure, $output);
-          }
-          break;
-          } */
+        $output->writeln('Will print using template: <info>' . $tplList[$tplIndex] . '</info>' . PHP_EOL);
     }
-
-    /*    protected function getLongestName(array $names) {
-      if (!empty($names)) {
-      return max(array_map('strlen', $names)) + 1;
-      } else {
-      return 0;
-      }
-      }
-
-      protected function printStructure(array $structure, OutputInterface $output) {
-      foreach ($structure as $name => $section) {
-      $output->writeln('<comment>' . $name . ':</comment>');
-      if(!empty($section)){
-      $this->printList($section, $output);
-      }else{
-      $output->writeln('   <error>No entries</error>');
-      }
-      }
-      }
-
-      protected function printList(array $list, OutputInterface $output) {
-      $longest = $this->getLongestName(array_keys($list));
-      foreach ($list as $abbr => $description) {
-      $output->writeln('    <info>' . $abbr . '</info>' . str_pad(' ', $longest - strlen($abbr)) . '- ' . $description);
-      }
-      }
-
-      protected function printListAsMatrix(array $list, OutputInterface $output) {
-      $longest = $this->getLongestName($list);
-      $dim = $this->getApplication()->getTerminalDimensions();
-      $rowMax = (int)($dim[0] / $longest);
-
-      if($rowMax < 1){
-      $rowMax = 1;
-      }
-
-      while(count($list) > 0){
-      $row = '';
-      for($i = 0; $i < $rowMax; $i++){
-      $abbr = array_shift($list);
-      $row .= $abbr.str_pad(' ', $longest - strlen($abbr));
-      }
-      $output->writeln($row);
-      }
-      } */
 }

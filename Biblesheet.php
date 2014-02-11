@@ -11,6 +11,10 @@ namespace Krillzip\Biblesheet;
 
 use Krillzip\Biblesheet\Preferences;
 use Krillzip\Biblesheet\Type\Sheet;
+use Krillzip\Biblesheet\Type\Meta;
+use Krillzip\Biblesheet\Type\Range;
+
+use PHPExcel_Cell;
 
 /**
  * Description of Biblesheet
@@ -33,9 +37,24 @@ class Biblesheet {
         return new Sheet($path);
     }
     
-    public static function extractReferences(Sheet $sheet, $range = null){
-        $sheet->walkSelectedSheet($range);
+    public function headingRange(Meta $meta){
+        $range = $meta->getRange();
+        $headingRow = $meta->getHeadings();
         
+        if(($range == null) || ($headingRow == null)){
+            return false;
+        }
+        $temp = PHPExcel_Cell::getRangeBoundaries($range);
+        $temp[0][1] = $temp[1][1]= $headingRow;
+        return join('', $temp[0]).':'.join('', $temp[1]);
+    }
+    
+    public function walkSheet(Sheet $sheet, $rangeOrMeta = null){
+        return Range::factory($sheet, $rangeOrMeta);
+    }
+    
+    public function extractMeta(Sheet $sheet){
+        return Meta::factory($sheet);
     }
     
 }

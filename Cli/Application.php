@@ -31,6 +31,7 @@ class Application extends BaseApplication{
         
         $this->add(new \Krillzip\Biblesheet\Cli\Command\BiblesheetPrintCommand());
         $this->add(new \Krillzip\Biblesheet\Cli\Command\BiblesheetProfileCommand());
+        $this->add(new \Krillzip\Biblesheet\Cli\Command\BiblesheetTestCommand());
         $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeDiagnoseCommand());
         $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeListCommand());
         $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeConfigCommand());

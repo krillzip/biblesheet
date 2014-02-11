@@ -17,4 +17,5 @@ namespace Krillzip\Biblesheet;
 class Exception extends \Exception{
     const PREFERENCE_ERROR = 1;
     const META_ERROR = 2;
+    const RANGE_ERROR = 3;
 }
