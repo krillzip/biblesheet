@@ -10,6 +10,7 @@
 namespace Krillzip\Biblesheet;
 
 use Krillzip\Biblesheet\Exception\PreferenceException;
+use Krillzip\Diatheke\Configuration;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -21,35 +22,40 @@ class Preferences {
 
     const PATH = '.biblesheet';
     const FILE_PREFERENCES = '.biblesheet/preferences.yaml';
-    protected $home;
 
+    protected $home;
     protected $config = array();
 
     public function __construct() {
-        $this->home = getenv('HOME').'/';
+        $this->home = getenv('HOME') . '/';
         $this->init();
     }
-    
+
     public function __destruct() {
         $this->finilize();
     }
-    
+
     protected function init() {
         if (!$this->preferenceFolderExists()) {
             $this->createPreferenceFolder();
         }
 
+        if (!file_exists($this->home . Preferences::FILE_PREFERENCES)) {
+            $this->savePreferences($this->getSkeleton());
+        }
         $this->config = $this->loadPreferences();
     }
-    
-    protected function finilize(){
+
+    protected function finilize() {
         $this->savePreferences();
     }
-    
-    protected function getSkeleton(){
+
+    protected function getSkeleton() {
         return array(
-            'defaultProfile' => null,
-            'workingFolder' => null,
+            'preferences' => array(
+                'defaultProfile' => 'default',
+                'workingFolder' => null,
+            ),
         );
     }
 
@@ -76,16 +82,21 @@ class Preferences {
             );
         }
         if ($result === false) {
-            throw new PreferenceException('Couldn\t save file: ' . $this->home . Preferences::FILE_PREFERENCES);
+            throw new PreferenceException('Couldn\'t save file: ' . $this->home . Preferences::FILE_PREFERENCES);
         }
         return true;
     }
 
     protected function loadPreferences() {
-        if (!file_exists($this->home . Preferences::FILE_PREFERENCES)){
-            $this->savePreferences($this->getSkeleton());
-        }
-        $this->config = Yaml::parse($this->home . Preferences::FILE_PREFERENCES);
+        return Yaml::parse($this->home . Preferences::FILE_PREFERENCES);
+    }
+
+    public function getSetting($path) {
+        return $this->config['preferences'][$path];
+    }
+
+    public function setSetting($path, $value) {
+        $this->config['preferences'][$path] = $value;
     }
 
 }

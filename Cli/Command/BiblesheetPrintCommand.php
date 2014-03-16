@@ -32,7 +32,7 @@ class BiblesheetPrintCommand extends Command {
                     new InputOption('title', 't', InputOption::VALUE_REQUIRED, 'Name or title of the sheet'),
                     new InputOption('template', 'm', InputOption::VALUE_REQUIRED, 'Template to use'),
                     new InputOption('profile', 'p', InputOption::VALUE_REQUIRED, 'Profile to apply'),
-                    //new InputOption('sheet', 'w', InputOption::VALUE_REQUIRED, 'Sheet to print'),
+                        //new InputOption('sheet', 'w', InputOption::VALUE_REQUIRED, 'Sheet to print'),
                 ))
                 ->setHelp(<<<EOT
 The <info>biblesheet:print</info> command takes an Excel sheet and prints a bible reference booklet
@@ -42,19 +42,18 @@ EOT
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        //$d = $this->getHelper('diatheke')->get();
-        $dialog = $this->getHelper('dialog');
         $biblesheet = $this->getHelper('biblesheet')->get();
-        
+        $diatheke = $this->getHelper('diatheke')->get();
+        $dialog = $this->getHelper('dialog');
+
         $tpl = new \Krillzip\Biblesheet\Template();
-        
+
         // Arguments and options
         $file = $input->getArgument('file');
         $title = $input->getOption('title');
         $template = $input->getOption('template');
         $profile = $input->getOption('profile');
         //$sheetIndex = $input->getOption('sheet');
-
         // Open file
         $sheet = $biblesheet->openSheet($file);
         if ($sheet === false) {
@@ -73,26 +72,50 @@ EOT
         }
 
         $output->writeln('Will print from worksheet: <info>' . $sheetNames[$sheetIndex] . '</info>' . PHP_EOL);
-        
+
         $sheet->selectSheet($sheetIndex);
         $meta = $biblesheet->extractMeta($sheet);
 
-         if($meta === false){
-             $output->writeln('<comment>No meta information extracted</comment>');
-         }
-         
-         $collection = $biblesheet->walkSheet($sheet, ($meta !== false) ? $meta : null)->flattenData();
-         
+        if ($meta === false) {
+            $output->writeln('<comment>No meta information extracted</comment>');
+        }
+
+        $collection = $biblesheet->walkSheet($sheet, ($meta !== false) ? $meta : null)->flattenData();
+
         // Check witch template to print with
         $tplList = $tpl->getList();
-        //if (count(templates) > 1) {
+        if(!empty($template)){
+            if(in_array($template, $tplList)){
+                $tplIndex = array_keys($tplList, $template, true);
+            }else{
+                $output->writeln('<error>Template: '. $template .' doesn\'t exist.</error>');
+            }
+        }else{
             $tplIndex = $dialog->select(
                     $output, 'Select template to use:' . PHP_EOL . '(<comment>Defaults to basic</comment>)', $tplList, 0
             );
-        //} else {
-        //    $tplIndex = 0;
-        //}
+        }
 
         $output->writeln('Will print using template: <info>' . $tplList[$tplIndex] . '</info>' . PHP_EOL);
+        
+        // Populating collection
+        
+        $progress = $this->getHelper('progress');
+        $progress->start($output, count($collection));
+        
+        $diatheke->configure($biblesheet->getDiathekeConfiguration());
+        foreach($collection as $index => $reference){
+            $reference-> verseCollection = $diatheke->bibleText($reference->reference);
+            $progress->advance();
+        }
+        $progress->finish();
+        
+        ob_start();
+        $tpl->render($tplList[$tplIndex], array(), array(), $collection);
+        $view = ob_get_contents();
+        ob_end_clean();
+        
+        file_put_contents(dirname($file).'/'.basename(strstr(substr($file, strrpos($file, '/') + 1), '.', true)).'.tex', $view);
     }
+
 }

@@ -10,6 +10,7 @@
 namespace Krillzip\Biblesheet\Cli\Helper;
 
 use Krillzip\Biblesheet\Biblesheet;
+use Krillzip\Diatheke\Diatheke;
 use Symfony\Component\Console\Helper\Helper;
 
 /**
@@ -20,6 +21,7 @@ use Symfony\Component\Console\Helper\Helper;
 class BiblesheetHelper extends Helper{
     
     protected static $biblesheet;
+    protected static $diatheke;
     
     public function getName(){
         return 'biblesheet';

@@ -10,10 +10,12 @@
 namespace Krillzip\Biblesheet;
 
 use Krillzip\Biblesheet\Preferences;
+use Krillzip\Biblesheet\Profiles;
 use Krillzip\Biblesheet\Type\Sheet;
 use Krillzip\Biblesheet\Type\Meta;
 use Krillzip\Biblesheet\Type\Range;
 
+use Krillzip\Diatheke\Configuration;
 use PHPExcel_Cell;
 
 /**
@@ -25,9 +27,27 @@ class Biblesheet {
     
     const REGEX = '/([1|2|3]?([i|I]+)?(\s?)\w+(\s+?))((\d+)?(,?)(\s?)(\d+))+(:?)((\d+)?([\-–]\d+)?(,(\s?)\d+[\-–]\d+)?)?/';
     protected $preferences;
+    protected $profiles;
     
     public function __construct() {
-        $this->preferences = new \Krillzip\Biblesheet\Preferences();
+        $this->preferences = new Preferences();
+        $this->profiles = new Profiles();
+    }
+    
+    public function getPreferences(){
+        return $this->preferences;
+    }
+    
+    public function getSetting($path){
+        return $this->preferences->getSetting($path);
+    }
+    
+    public function getProfiles(){
+        return $this->profiles;
+    }
+    
+    public function getProfile($name){
+        return $this->profiles->loadProfile($name);
     }
     
     public function openSheet($path){
@@ -57,4 +77,9 @@ class Biblesheet {
         return Meta::factory($sheet);
     }
     
+    public function getDiathekeConfiguration() {
+        $dp = $this->getSetting('defaultProfile');
+        $profile = $this->profiles->loadProfile($dp);
+        return new Configuration($profile['configuration']);
+    }
 }

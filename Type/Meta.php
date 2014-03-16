@@ -33,19 +33,19 @@ class Meta {
             }
         }
         if (is_array($json) || is_object($json)) {
-            if (!empty($json['range'])) {
+            if (!empty($json->range)) {
                 try {
-                    $this->range = PHPExcel_Cell::buildRange(PHPEXCEL_Cell::splitRange($json['range']));
+                    $this->range = PHPExcel_Cell::buildRange(PHPEXCEL_Cell::splitRange($json->range));
                     list($this->width, $this->height) = PHPExcel_Cell::rangeDimension($this->range);
                 } catch (\Exception $e) {
                     $this->range = null;
                 }
             }
-            if (isset($json['headings']) && is_int($json['headings'])) {
-                $this->headings = (int) $json['headings'];
+            if (isset($json->headings) && is_int($json->headings)) {
+                $this->headings = (int) $json->headings;
             }
-            if (isset($json['headingsAsBooks']) && is_bool($json['headingsAsBooks'])) {
-                $this->headingsAsBooks = (bool) $json['headingsAsBooks'];
+            if (isset($json->headingsAsBooks) && is_bool($json->headingsAsBooks)) {
+                $this->headingsAsBooks = (bool) $json->headingsAsBooks;
             }
         }
     }

@@ -13,7 +13,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * Description of BiblesheetConfigCommand
@@ -37,5 +39,28 @@ The <info>biblesheet:print</info> command takes an Excel sheet and prints a bibl
 EOT
                 )*/
         ;
+    }
+    
+    protected function execute(InputInterface $input, OutputInterface $output) {
+        $biblesheet = $this->getHelper('biblesheet')->get();
+        $diathekeHelper = $this->getHelper('diatheke');
+        
+        $app = $this->getApplication();
+        $command = $app->get('diatheke:config');
+        
+        $inputArr = new ArrayInput(array('diatheke:config'));
+        $outputData = new StreamOutput(fopen('php://stdout', 'w'));
+        $exitCode = $command->run($inputArr, $outputData);
+        
+        if($exitCode != 0){
+            
+        }
+  
+        $profiles = $biblesheet->getProfiles();
+        $p = $profiles->getSkeleton();
+        $p['profile']['configuration'] = $diathekeHelper->receiveMessage();
+        
+        $pName = $biblesheet->getSetting('defaultProfile');
+        $profiles->saveProfile($pName, $p);
     }
 }
