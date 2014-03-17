@@ -58,7 +58,7 @@ EOT
   
         $profiles = $biblesheet->getProfiles();
         $p = $profiles->getSkeleton();
-        $p['profile']['configuration'] = $diathekeHelper->receiveMessage();
+        $p['configuration'] = $diathekeHelper->receiveMessage();
         
         $pName = $biblesheet->getSetting('defaultProfile');
         $profiles->saveProfile($pName, $p);

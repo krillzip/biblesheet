@@ -101,12 +101,17 @@ EOT
         // Populating collection
         
         $progress = $this->getHelper('progress');
-        $progress->start($output, count($collection));
+        $progress->start($output, count($collection)*2);
         
         $diatheke->configure($biblesheet->getDiathekeConfiguration());
         foreach($collection as $index => $reference){
-            $reference-> verseCollection = $diatheke->bibleText($reference->reference);
+            $reference->verseCollection = $diatheke->bibleText($reference->reference);
             $progress->advance();
+            $reference->book = $diatheke->bibleBook($reference->reference);
+            $progress->advance();
+            if($reference->book == null){
+                $output->writeln(' <error>Invalid reference: '.$reference->reference.'</error>');
+            }
         }
         $progress->finish();
         
@@ -115,7 +120,17 @@ EOT
         $view = ob_get_contents();
         ob_end_clean();
         
-        file_put_contents(dirname($file).'/'.basename(strstr(substr($file, strrpos($file, '/') + 1), '.', true)).'.tex', $view);
+        $texFile = dirname($file).'/'.basename(strstr(substr($file, strrpos($file, '/') + 1), '.', true)).'.tex';
+        file_put_contents($texFile, $view);
+        
+        // Execute the latex generator
+        /*exec('type pdflatex', $cOutput, $returnVal);
+        if($returnVal === 0){
+            $output->writeln('Latex is installed on this system.');
+            if($dialog->select($output, 'Do you want to generate a pdf?', array('y', 'n')) === 0){
+                exec('pdflatex ' . $texFile);
+            }
+        }*/
     }
 
 }

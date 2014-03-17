@@ -9,6 +9,8 @@
 
 namespace Krillzip\Biblesheet;
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Description of Template
  *
@@ -27,11 +29,26 @@ class Template {
         }
         return $list;
     }
+    
+    protected function loadTemplate($tplName){
+        $tplData = Yaml::parse($this->getPath() . '/' . $tplName . '.yml');
+        return $tplData['template'];
+    }
 
     public function render(
     $tpl = 'basic', array $settings, array $variables, array $collection
     ) {
+        $data = $this->loadTemplate($tpl);
         
+        foreach($variables as $varIndex => $var){
+            if(!in_array($varIndex, $data['variables'])){
+                unset($variables[$varIndex]);
+            }
+        }
+        
+        $settings = array_merge($data['settings'], $settings);
+
+        include $this->getPath() . '/' . $tpl . '.php';
     }
 
 }

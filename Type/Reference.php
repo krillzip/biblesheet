@@ -20,6 +20,7 @@ class Reference{
     public $title;
     public $cell;
     public $info;
+    public $book;
     public $verseCollection;
     
     public function __construct($reference, $cell, $title = null, $info = null){
