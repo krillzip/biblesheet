@@ -15,6 +15,6 @@ template:
         [title, author]
     settings:
         frontpage: true
-        tableOfContent: true
+        tableOfContents: true
         verseNewline: true        
         

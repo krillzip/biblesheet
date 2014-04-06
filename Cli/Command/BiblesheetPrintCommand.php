@@ -84,53 +84,55 @@ EOT
 
         // Check witch template to print with
         $tplList = $tpl->getList();
-        if(!empty($template)){
-            if(in_array($template, $tplList)){
+        if (!empty($template)) {
+            if (in_array($template, $tplList)) {
                 $tplIndex = array_keys($tplList, $template, true);
-            }else{
-                $output->writeln('<error>Template: '. $template .' doesn\'t exist.</error>');
+            } else {
+                $output->writeln('<error>Template: ' . $template . ' doesn\'t exist.</error>');
             }
-        }else{
+        } else {
             $tplIndex = $dialog->select(
                     $output, 'Select template to use:' . PHP_EOL . '(<comment>Defaults to basic</comment>)', $tplList, 0
             );
         }
 
         $output->writeln('Will print using template: <info>' . $tplList[$tplIndex] . '</info>' . PHP_EOL);
-        
+
         // Populating collection
-        
+
         $progress = $this->getHelper('progress');
-        $progress->start($output, count($collection)*2);
-        
+        $progress->start($output, count($collection) * 2);
+
         $diatheke->configure($biblesheet->getDiathekeConfiguration());
-        foreach($collection as $index => $reference){
+        foreach ($collection as $index => $reference) {
             $reference->verseCollection = $diatheke->bibleText($reference->reference);
             $progress->advance();
             $reference->book = $diatheke->bibleBook($reference->reference);
             $progress->advance();
-            if($reference->book == null){
-                $output->writeln(' <error>Invalid reference: '.$reference->reference.'</error>');
+            if ($reference->book == null) {
+                $output->writeln(' <error>Invalid reference: ' . $reference->reference . '</error>');
             }
         }
         $progress->finish();
-        
+
         ob_start();
-        $tpl->render($tplList[$tplIndex], array(), array(), $collection);
+        $tpl->render(
+                $tplList[$tplIndex], ($meta !== false) ? $meta->getSettings() : array(), ($meta !== false) ? $meta->getVariables() : array(), $collection
+        );
         $view = ob_get_contents();
         ob_end_clean();
-        
-        $texFile = dirname($file).'/'.basename(strstr(substr($file, strrpos($file, '/') + 1), '.', true)).'.tex';
+
+        $texFile = dirname($file) . '/' . basename(strstr(substr($file, strrpos($file, '/') + 1), '.', true)) . '.tex';
         file_put_contents($texFile, $view);
-        
+
         // Execute the latex generator
-        /*exec('type pdflatex', $cOutput, $returnVal);
-        if($returnVal === 0){
+        exec('type rubber', $cOutput, $returnVal);
+        if ($returnVal === 0) {
             $output->writeln('Latex is installed on this system.');
-            if($dialog->select($output, 'Do you want to generate a pdf?', array('y', 'n')) === 0){
-                exec('pdflatex ' . $texFile);
+            if ($dialog->select($output, 'Do you want to generate a pdf?', array('y', 'n')) == 0) {
+                system('rubber -d ' . $texFile);
             }
-        }*/
+        }
     }
 
 }

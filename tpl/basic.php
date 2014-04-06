@@ -46,7 +46,7 @@
 \raggedright
 \setcounter{secnumdepth}{0}
 
-<?php if( isset($settings['tableOfContent']) && ($settings['tableOfContent'] == false) ): ?><?php else: ?>
+<?php if( isset($settings['tableOfContents']) && ($settings['tableOfContents'] == false) ): ?><?php else: ?>
 \tableofcontents
 \newpage
 <?php endif; ?>
@@ -69,8 +69,9 @@ if($verse['chapter'] != $chapter){
 }else{
     echo $verse['verse'];   
 }
-?>} <?php echo $verse['text']; ?><?php if($vIndex < (count($passage->verseCollection)-1)): ?>\linebreak
-<?php endif; ?>
+?>} <?php echo $verse['text']; ?><?php if( isset($settings['verseNewline']) && ($settings['verseNewline'] == false)): ?>
+    <?php else:?><?php if($vIndex < (count($passage->verseCollection)-1)): ?>\linebreak
+<?php endif; ?><?php endif;?>
 <?php endforeach; ?>
 
 \end{multicols}

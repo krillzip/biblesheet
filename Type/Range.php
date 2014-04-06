@@ -30,7 +30,9 @@ class Range {
         $data = array();
         foreach ($this->data as $rowNum => $col) {
             foreach ($col as $colName => $text) {
-                $data[] = new Reference($text, $colName . $rowNum);
+                if(!empty($text)){
+                    $data[] = new Reference($text, $colName . $rowNum);
+                }
             }
         }
         return $data;

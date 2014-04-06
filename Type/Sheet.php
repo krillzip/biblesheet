@@ -43,4 +43,9 @@ class Sheet {
     public function getSelectedSheet(){
         return $this->sheet;
     }
+    
+    public function getMetaSheet(){
+        return $this->document->getSheetByName('_meta');
+
+    }
 }
