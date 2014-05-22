@@ -35,6 +35,8 @@ class Application extends BaseApplication{
         $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeDiagnoseCommand());
         $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeListCommand());
         $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeConfigCommand());
+        $this->add(new \Krillzip\Diatheke\Cli\Command\DiathekeSearchCommand());
+        $this->add(new \Krillzip\Diatheke\Cli\Command\TestCommand());
         
         parent::__construct(static::NAME, static::VERSION);
     }

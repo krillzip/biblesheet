@@ -30,12 +30,30 @@ class Range {
         $data = array();
         foreach ($this->data as $rowNum => $col) {
             foreach ($col as $colName => $text) {
-                if(!empty($text)){
-                    $data[] = new Reference($text, $colName . $rowNum);
+                if (!empty($text)) {
+                    $extract = $this->extractTitle($text);
+                    $data[] = new Reference(
+                            $extract['reference'], $colName . $rowNum, $extract['title']
+                    );
                 }
             }
         }
         return $data;
+    }
+
+    protected function extractTitle($text) {
+        $pos = strrpos($text, ',');
+        if ($pos === false) {
+            return array(
+                'reference' => $text,
+                'title' => null,
+            );
+        } else {
+            return array(
+                'reference' => trim(substr($text, $pos + 1)),
+                'title' => trim(substr($text, 0, $pos)),
+            );
+        }
     }
 
     protected static function walk(Sheet $sheet) {

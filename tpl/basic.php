@@ -30,7 +30,8 @@
     {\bfseries\centering}}
 
 \begin{document}
-<?php if( isset($settings['frontpage']) && ($settings['frontpage'] == false) ): ?><?php else: ?>
+<?php if( isset($settings['frontpage']) && ($settings['frontpage'] == false) ): ?>
+<?php else: ?>
 \begin{titlepage}
   \newgeometry{margin=25mm}
   <?php if( isset($variables['title'])): ?>
@@ -49,6 +50,14 @@
 <?php if( isset($settings['tableOfContents']) && ($settings['tableOfContents'] == false) ): ?><?php else: ?>
 \tableofcontents
 \newpage
+<?php endif; ?>
+
+<?php if( isset($settings['frontpage']) && ($settings['frontpage'] == false) ): ?>
+  <?php if( isset($variables['title'])): ?>
+  \begin{center}
+    \textsc{\Huge <?php echo $variables['title']; ?>}
+  \end{center}
+  <?php endif; ?>
 <?php endif; ?>
 
 <?php foreach($collection as $passage): ?>
